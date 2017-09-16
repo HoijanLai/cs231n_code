@@ -195,9 +195,9 @@ class FullyConnectedNet(object):
                 if self.use_batchnorm:
                     gamma = self.params['gamma%d'%(i+1)]
                     beta = self.params['beta%d'%(i+1)]
-                    h, cache = affine_bn_relu_forward(h, w, b, gamma, beta, self.bn_params[i])
+                    h, cache = affine_bn_relu_forward(h, w, b, gamma, beta, self.bn_params[i], self.use_dropout, self.dropout_param)
                 else:
-                    h, cache = affine_relu_forward(h, w, b)
+                    h, cache = affine_relu_forward(h, w, b, self.use_dropout, self.dropout_param) 
             caches.append(cache)
 
         # If test mode return early
@@ -216,9 +216,9 @@ class FullyConnectedNet(object):
                 if self.use_batchnorm:
                     gamma_key = 'gamma%d'%(idx)
                     beta_key = 'beta%d'%(num_l-i)
-                    dout, grads[w_key], grads[b_key], grads[gamma_key], grads[beta_key] = affine_bn_relu_backward(dout, caches[idx-1]) 
+                    dout, grads[w_key], grads[b_key], grads[gamma_key], grads[beta_key] = affine_bn_relu_backward(dout, caches[idx-1], self.use_dropout) 
                 else:
-                    dout, grads[w_key], grads[b_key] = affine_relu_backward(dout, caches[idx-1])
+                    dout, grads[w_key], grads[b_key] = affine_relu_backward(dout, caches[idx-1], self.use_dropout)
             else:
                 dout, grads[w_key], grads[b_key] = affine_backward(dout, caches[idx-1])
 
